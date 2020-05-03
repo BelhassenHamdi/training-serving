@@ -12,6 +12,8 @@ import time
 import os
 import copy
 
+os.environ['TORCH_HOME'] = '/home/hamdi/Documents/training-serving/models'
+
 plt.ion()   # interactive mode
 
 
@@ -35,7 +37,7 @@ data_transforms = {
     ]),
 }
 
-data_dir = 'data/hymenoptera_data'
+data_dir = '../../../data/drinks'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
@@ -52,6 +54,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def imshow(inp, title=None):
     """Imshow for Tensor."""
+    plt.figure(figsize=(20,10))
     inp = inp.numpy().transpose((1, 2, 0))
     mean = np.array([0.485, 0.456, 0.406])
     std = np.array([0.229, 0.224, 0.225])
@@ -60,7 +63,7 @@ def imshow(inp, title=None):
     plt.imshow(inp)
     if title is not None:
         plt.title(title)
-    plt.pause(0.001)  # pause a bit so that plots are updated
+    plt.pause(0.01)  # pause a bit so that plots are updated
 
 
 # Get a batch of training data
@@ -70,9 +73,6 @@ inputs, classes = next(iter(dataloaders['train']))
 out = torchvision.utils.make_grid(inputs)
 
 imshow(out, title=[class_names[x] for x in classes])
-
-
-
 
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
@@ -189,15 +189,9 @@ optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
 # Decay LR by a factor of 0.1 every 7 epochs
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
-
-
-
-
-
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
                        num_epochs=25)
 
-
-
-
 visualize_model(model_ft)
+
+input('input something to stop')
